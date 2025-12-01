@@ -1,5 +1,4 @@
-const chromium = require('@sparticuz/chromium');
-const puppeteer = require('puppeteer-core');
+const playwright = require('playwright-core');
 
 module.exports = async (req, res) => {
   // Set CORS headers
@@ -94,17 +93,12 @@ module.exports = async (req, res) => {
       </html>
     `;
 
-    // Launch Puppeteer with chromium
-    browser = await puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
-    });
+    // Launch Playwright with Chromium
+    browser = await playwright.chromium.launch();
     
     const page = await browser.newPage();
-    await page.setViewport({ width: 794, height: 1123 });
-    await page.setContent(html, { waitUntil: 'networkidle0' });
+    await page.setViewportSize({ width: 794, height: 1123 });
+    await page.setContent(html, { waitUntil: 'networkidle' });
     
     // Wait for images to load with timeout
     try {
