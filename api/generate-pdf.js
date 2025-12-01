@@ -1,5 +1,4 @@
-const chromium = require('@sparticuz/chromium');
-const puppeteer = require('puppeteer-core');
+const chromium = require('chrome-aws-lambda');
 
 module.exports = async (req, res) => {
   // Set CORS headers
@@ -95,16 +94,10 @@ module.exports = async (req, res) => {
     `;
 
     // Launch Puppeteer with chromium
-    browser = await puppeteer.launch({
-      args: [
-        ...chromium.args,
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--single-process'
-      ],
+    browser = await chromium.puppeteer.launch({
+      args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
+      executablePath: await chromium.executablePath,
       headless: chromium.headless,
       ignoreHTTPSErrors: true,
     });
