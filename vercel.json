@@ -1,0 +1,16 @@
+{
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/build",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/backend/api/:path*"
+    }
+  ],
+  "functions": {
+    "backend/api/**/*.js": {
+      "memory": 3008,
+      "maxDuration": 60
+    }
+  }
+}
