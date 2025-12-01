@@ -104,10 +104,8 @@ module.exports = async (req, res) => {
         '--single-process'
       ],
       defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath({
-        path: '/tmp'
-      }),
-      headless: true,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
       ignoreHTTPSErrors: true,
     });
     
