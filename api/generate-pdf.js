@@ -96,10 +96,19 @@ module.exports = async (req, res) => {
 
     // Launch Puppeteer with chromium
     browser = await puppeteer.launch({
-      args: chromium.args,
+      args: [
+        ...chromium.args,
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--single-process'
+      ],
       defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
+      executablePath: await chromium.executablePath({
+        path: '/tmp'
+      }),
+      headless: true,
+      ignoreHTTPSErrors: true,
     });
     
     const page = await browser.newPage();
