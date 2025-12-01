@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "playwright-core": "^1.40.0",
-    "@playwright/browser-chromium": "^1.40.0"
+    "playwright-aws-lambda": "^0.10.0"
   }
 }

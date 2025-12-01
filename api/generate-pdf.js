@@ -1,4 +1,4 @@
-const playwright = require('playwright-core');
+const playwright = require('playwright-aws-lambda');
 
 module.exports = async (req, res) => {
   // Set CORS headers
@@ -94,7 +94,7 @@ module.exports = async (req, res) => {
     `;
 
     // Launch Playwright with Chromium
-    browser = await playwright.chromium.launch();
+    browser = await playwright.launchChromium();
     
     const page = await browser.newPage();
     await page.setViewportSize({ width: 794, height: 1123 });
