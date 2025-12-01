@@ -7,11 +7,5 @@
       "source": "/api/generate-pdf",
       "destination": "/backend/api/generate-pdf.js"
     }
-  ],
-  "functions": {
-    "backend/api/*.js": {
-      "memory": 3008,
-      "maxDuration": 60
-    }
-  }
+  ]
 }

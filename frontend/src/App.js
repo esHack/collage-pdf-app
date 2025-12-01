@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Upload, Download, Type, ImagePlus, Trash2, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import heic2any from 'heic2any';
 
@@ -15,9 +15,9 @@ function App() {
   const canvasRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  // Get current page data
-  const images = pages[currentPage]?.images || [];
-  const texts = pages[currentPage]?.texts || [];
+  // Get current page data with useMemo to prevent unnecessary re-renders
+  const images = useMemo(() => pages[currentPage]?.images || [], [pages, currentPage]);
+  const texts = useMemo(() => pages[currentPage]?.texts || [], [pages, currentPage]);
   
   const setImages = (updateFn) => {
     setPages(prev => {
