@@ -1,4 +1,4 @@
-const playwright = require('playwright-aws-lambda');
+const puppeteer = require('puppeteer');
 
 module.exports = async (req, res) => {
   // Set CORS headers
@@ -93,12 +93,15 @@ module.exports = async (req, res) => {
       </html>
     `;
 
-    // Launch Playwright with Chromium
-    browser = await playwright.launchChromium();
+    // Launch Puppeteer - it will download and use bundled Chromium
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
     
     const page = await browser.newPage();
-    await page.setViewportSize({ width: 794, height: 1123 });
-    await page.setContent(html, { waitUntil: 'networkidle' });
+    await page.setViewport({ width: 794, height: 1123 });
+    await page.setContent(html, { waitUntil: 'networkidle0' });
     
     // Wait for images to load with timeout
     try {
