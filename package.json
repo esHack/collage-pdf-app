@@ -1,0 +1,7 @@
+{
+  "name": "collage-pdf-app",
+  "version": "1.0.0",
+  "scripts": {
+    "vercel-build": "cd frontend && npm install && npm run build"
+  }
+}
