@@ -291,6 +291,46 @@ function App() {
     setIsGenerating(true);
     
     try {
+      // Compress images before sending to API
+      const compressedPages = await Promise.all(pages.map(async (page) => {
+        const compressedImages = await Promise.all(page.images.map(async (img) => {
+          // Create a canvas to compress the image
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const image = new Image();
+          
+          return new Promise((resolve) => {
+            image.onload = () => {
+              // Limit max dimensions to reduce size
+              const maxDim = 1200;
+              let width = image.width;
+              let height = image.height;
+              
+              if (width > maxDim || height > maxDim) {
+                if (width > height) {
+                  height = (height / width) * maxDim;
+                  width = maxDim;
+                } else {
+                  width = (width / height) * maxDim;
+                  height = maxDim;
+                }
+              }
+              
+              canvas.width = width;
+              canvas.height = height;
+              ctx.drawImage(image, 0, 0, width, height);
+              
+              // Compress to JPEG with 0.7 quality
+              const compressedSrc = canvas.toDataURL('image/jpeg', 0.7);
+              resolve({ ...img, src: compressedSrc });
+            };
+            image.src = img.src;
+          });
+        }));
+        
+        return { ...page, images: compressedImages };
+      }));
+      
       // Use relative URL in production (Vercel), absolute URL in development
       const apiUrl = window.location.hostname === 'localhost' 
         ? 'http://localhost:3001/generate-pdf' 
@@ -304,7 +344,7 @@ function App() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          pages: pages,
+          pages: compressedPages,
         }),
       });
 
