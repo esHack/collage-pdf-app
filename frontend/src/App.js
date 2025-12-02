@@ -291,7 +291,13 @@ function App() {
     setIsGenerating(true);
     
     try {
-      const apiUrl = process.env.NODE_ENV === 'production' ? '/api/generate-pdf' : 'http://localhost:3001/generate-pdf';
+      // Use relative URL in production (Vercel), absolute URL in development
+      const apiUrl = window.location.hostname === 'localhost' 
+        ? 'http://localhost:3001/generate-pdf' 
+        : '/api/generate-pdf';
+      
+      console.log('Calling API:', apiUrl);
+      
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
