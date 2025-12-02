@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer');
+const chromium = require('chrome-aws-lambda');
 
 module.exports = async (req, res) => {
   // Set CORS headers
@@ -93,10 +93,12 @@ module.exports = async (req, res) => {
       </html>
     `;
 
-    // Launch Puppeteer - it will download and use bundled Chromium
-    browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    // Launch Puppeteer with chrome-aws-lambda
+    browser = await chromium.puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath,
+      headless: chromium.headless,
     });
     
     const page = await browser.newPage();
