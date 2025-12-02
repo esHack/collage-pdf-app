@@ -95,10 +95,12 @@ module.exports = async (req, res) => {
     `;
 
     // Launch Puppeteer with chrome-aws-lambda
+    const executablePath = await chromium.executablePath;
+    
     browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath: chromium.executablePath,
+      executablePath: executablePath,
       headless: chromium.headless,
     });
     
