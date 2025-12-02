@@ -1,5 +1,4 @@
-const chromium = require('chrome-aws-lambda');
-const puppeteer = require('puppeteer-core');
+const PDFDocument = require('pdfkit');
 
 module.exports = async (req, res) => {
   // Set CORS headers
@@ -22,7 +21,6 @@ module.exports = async (req, res) => {
 
   const { pages } = req.body;
   
-  let browser;
   try {
     console.log('Generating PDF with', pages?.length || 0, 'pages');
     
@@ -32,128 +30,89 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'Invalid pages data' });
     }
     
-    // Generate HTML for all pages
-    const pagesHTML = pages.map(page => {
-      const { images = [], texts = [] } = page;
-      return `
-        <div class="page">
-          ${images.map(img => `
-            <div style="position: absolute; left: ${img.x}px; top: ${img.y}px; width: ${img.width}px; height: ${img.height}px; transform: rotate(${img.rotation || 0}deg); transform-origin: center center;">
-              <img class="image" src="${img.src}" 
-                style="width: 100%; height: 100%;" />
-            </div>
-          `).join('')}
-          ${texts.map(txt => `
-            <div class="text" style="left: ${txt.x}px; top: ${txt.y}px; font-size: ${txt.fontSize}px; color: ${txt.color};">
-              ${txt.content}
-            </div>
-          `).join('')}
-        </div>
-      `;
-    }).join('');
-    
-    // Generate HTML from the collage data
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="UTF-8">
-          <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            html, body { margin: 0; padding: 0; }
-            .page {
-              position: relative;
-              width: 794px;
-              height: 1123px;
-              background: white;
-              overflow: hidden;
-              page-break-after: always;
-            }
-            .page:last-child {
-              page-break-after: auto;
-            }
-            .image {
-              position: absolute;
-              object-fit: contain;
-              display: block;
-            }
-            .text {
-              position: absolute;
-              white-space: nowrap;
-              font-family: Arial, sans-serif;
-            }
-            @page { 
-              size: A4; 
-              margin: 0; 
-            }
-          </style>
-        </head>
-        <body>
-          ${pagesHTML}
-        </body>
-      </html>
-    `;
-
-    // Launch Puppeteer with chrome-aws-lambda
-    const executablePath = await chromium.executablePath;
-    
-    browser = await puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: executablePath,
-      headless: chromium.headless,
+    // Create PDF document (A4 size: 595.28 x 841.89 points)
+    const doc = new PDFDocument({ 
+      size: 'A4',
+      margin: 0,
+      autoFirstPage: false
     });
     
-    const page = await browser.newPage();
-    await page.setViewport({ width: 794, height: 1123 });
-    await page.setContent(html, { waitUntil: 'networkidle0' });
-    
-    // Wait for images to load with timeout
-    try {
-      await page.evaluate(() => {
-        return Promise.all(
-          Array.from(document.images).map(img => {
-            if (img.complete) return Promise.resolve();
-            return new Promise((resolve, reject) => {
-              const timeout = setTimeout(() => resolve(), 5000);
-              img.addEventListener('load', () => {
-                clearTimeout(timeout);
-                resolve();
-              });
-              img.addEventListener('error', () => {
-                clearTimeout(timeout);
-                resolve();
-              });
-            });
-          })
-        );
-      });
-    } catch (imgError) {
-      console.warn('Image loading error:', imgError);
+    const chunks = [];
+    doc.on('data', chunk => chunks.push(chunk));
+    doc.on('end', () => {
+      const pdfBuffer = Buffer.concat(chunks);
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Length', pdfBuffer.length);
+      res.setHeader('Content-Disposition', 'attachment; filename="collage.pdf"');
+      res.end(pdfBuffer);
+    });
+
+    // Process each page
+    for (let i = 0; i < pages.length; i++) {
+      const page = pages[i];
+      doc.addPage();
+      
+      // Add images
+      if (page.images && page.images.length > 0) {
+        for (const img of page.images) {
+          try {
+            // Convert data URL to buffer
+            const base64Data = img.src.split(',')[1];
+            const imageBuffer = Buffer.from(base64Data, 'base64');
+            
+            // Calculate position and size (PDF points: 794px -> 595.28pt, 1123px -> 841.89pt)
+            const scaleX = 595.28 / 794;
+            const scaleY = 841.89 / 1123;
+            const x = img.x * scaleX;
+            const y = img.y * scaleY;
+            const width = img.width * scaleX;
+            const height = img.height * scaleY;
+            
+            // Save current state
+            doc.save();
+            
+            // Apply rotation if needed
+            if (img.rotation && img.rotation !== 0) {
+              const centerX = x + width / 2;
+              const centerY = y + height / 2;
+              doc.rotate(img.rotation, { origin: [centerX, centerY] });
+            }
+            
+            // Add image
+            doc.image(imageBuffer, x, y, { width, height });
+            
+            // Restore state
+            doc.restore();
+          } catch (err) {
+            console.error('Error adding image:', err);
+          }
+        }
+      }
+      
+      // Add texts
+      if (page.texts && page.texts.length > 0) {
+        for (const txt of page.texts) {
+          try {
+            const scaleX = 595.28 / 794;
+            const scaleY = 841.89 / 1123;
+            const x = txt.x * scaleX;
+            const y = txt.y * scaleY;
+            const fontSize = txt.fontSize * Math.min(scaleX, scaleY);
+            
+            doc.fillColor(txt.color || '#000000')
+               .fontSize(fontSize)
+               .text(txt.content, x, y, { lineBreak: false });
+          } catch (err) {
+            console.error('Error adding text:', err);
+          }
+        }
+      }
     }
-    
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Generate PDF
-    const pdf = await page.pdf({
-      format: 'A4',
-      printBackground: true,
-      margin: { top: 0, right: 0, bottom: 0, left: 0 },
-    });
 
-    console.log('PDF generated successfully, size:', pdf.length, 'bytes');
+    doc.end();
     
-    // Set proper headers for PDF
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Length', pdf.length);
-    res.setHeader('Content-Disposition', 'attachment; filename="collage.pdf"');
-    res.end(pdf, 'binary');
   } catch (error) {
     console.error('Error generating PDF:', error);
     res.status(500).json({ error: 'Failed to generate PDF', details: error.message });
-  } finally {
-    if (browser) {
-      await browser.close();
-    }
   }
 };
