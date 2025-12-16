@@ -380,10 +380,10 @@ function App() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0f172a', padding: '1rem' }}>
+    <div style={{ minHeight: '100vh', background: '#0f172a', padding: '0' }}>
       <div style={{ maxWidth: '90rem', margin: '0 auto' }}>
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '2rem', paddingTop: '1rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2rem', paddingTop: '0.5rem' }}>
           <h1 style={{ fontSize: '2.5rem', fontWeight: '700', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', marginBottom: '0.5rem' }}>
             Upload, Arrange & Create PDF
           </h1>
