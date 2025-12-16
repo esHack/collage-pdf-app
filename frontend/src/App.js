@@ -458,7 +458,7 @@ function App() {
                 border: 'none',
                 overflow: 'visible',
                 position: 'relative',
-                touchAction: selectedItem ? 'none' : 'pan-y',
+                touchAction: 'pan-y',
                 background: 'white',
                 borderRadius: '1rem',
                 boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1)'
