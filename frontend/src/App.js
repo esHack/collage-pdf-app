@@ -506,6 +506,7 @@ function App() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    gap: '0.25rem',
                     boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
                     touchAction: 'none'
                   }}
@@ -513,6 +514,7 @@ function App() {
                   onTouchStart={(e) => { e.preventDefault(); setSelectedItem({ ...img, type: 'image' }); handleMouseDown(e, img, 'image'); }}
                 >
                   <GripVertical size={20} color="white" />
+                  <span style={{ fontSize: '0.625rem', color: 'white', fontWeight: '600', whiteSpace: 'nowrap' }}>Drag</span>
                 </div>
               )}
               {/* Desktop: whole image is draggable */}
@@ -549,10 +551,10 @@ function App() {
                     onTouchStart={(e) => handleResizeStart(e, img, 'nw')}
                     style={{
                       position: 'absolute',
-                      top: '-6px',
-                      left: '-6px',
-                      width: '12px',
-                      height: '12px',
+                      top: '-9px',
+                      left: '-9px',
+                      width: '18px',
+                      height: '18px',
                       background: '#3b82f6',
                       border: '2px solid white',
                       borderRadius: '50%',
@@ -565,10 +567,10 @@ function App() {
                     onTouchStart={(e) => handleResizeStart(e, img, 'ne')}
                     style={{
                       position: 'absolute',
-                      top: '-6px',
-                      right: '-6px',
-                      width: '12px',
-                      height: '12px',
+                      top: '-9px',
+                      right: '-9px',
+                      width: '18px',
+                      height: '18px',
                       background: '#3b82f6',
                       border: '2px solid white',
                       borderRadius: '50%',
@@ -581,10 +583,10 @@ function App() {
                     onTouchStart={(e) => handleResizeStart(e, img, 'sw')}
                     style={{
                       position: 'absolute',
-                      bottom: '-6px',
-                      left: '-6px',
-                      width: '12px',
-                      height: '12px',
+                      bottom: '-9px',
+                      left: '-9px',
+                      width: '18px',
+                      height: '18px',
                       background: '#3b82f6',
                       border: '2px solid white',
                       borderRadius: '50%',
@@ -597,10 +599,10 @@ function App() {
                     onTouchStart={(e) => handleResizeStart(e, img, 'se')}
                     style={{
                       position: 'absolute',
-                      bottom: '-6px',
-                      right: '-6px',
-                      width: '12px',
-                      height: '12px',
+                      bottom: '-9px',
+                      right: '-9px',
+                      width: '18px',
+                      height: '18px',
                       background: '#3b82f6',
                       border: '2px solid white',
                       borderRadius: '50%',
@@ -608,13 +610,13 @@ function App() {
                       zIndex: 10,
                     }}
                   />
-                  {/* Rotation buttons */}
+                  {/* Rotation buttons - bottom left */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       rotateImage(img.id, 'left');
                     }}
-                    style={{ position: 'absolute', top: '-0.5rem', left: '-2.5rem', background: '#22c55e', color: 'white', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', border: 'none', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 'bold', zIndex: 10 }}
+                    style={{ position: 'absolute', bottom: '-0.5rem', left: '-2.5rem', background: '#22c55e', color: 'white', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', border: 'none', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 'bold', zIndex: 10 }}
                     title="Rotate left"
                     onMouseOver={(e) => e.target.style.background = '#16a34a'}
                     onMouseOut={(e) => e.target.style.background = '#22c55e'}
@@ -626,7 +628,7 @@ function App() {
                       e.stopPropagation();
                       rotateImage(img.id, 'right');
                     }}
-                    style={{ position: 'absolute', top: '-0.5rem', left: '1.5rem', background: '#22c55e', color: 'white', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', border: 'none', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 'bold', zIndex: 10 }}
+                    style={{ position: 'absolute', bottom: '-0.5rem', left: '1.5rem', background: '#22c55e', color: 'white', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', border: 'none', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 'bold', zIndex: 10 }}
                     title="Rotate right"
                     onMouseOver={(e) => e.target.style.background = '#16a34a'}
                     onMouseOut={(e) => e.target.style.background = '#22c55e'}
