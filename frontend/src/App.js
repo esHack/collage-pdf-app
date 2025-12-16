@@ -380,7 +380,7 @@ function App() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0f172a', padding: '0' }}>
+    <div style={{ minHeight: '100vh', background: '#0f172a', padding: '0', paddingBottom: '2rem' }}>
       <div style={{ maxWidth: '90rem', margin: '0 auto' }}>
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '2rem', paddingTop: '0.5rem' }}>
