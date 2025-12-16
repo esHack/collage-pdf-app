@@ -380,21 +380,21 @@ function App() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0f172a', padding: '0' }}>
-      <div style={{ maxWidth: '90rem', margin: '0 auto' }}>
+    <div style={{ minHeight: '100vh', background: '#0f172a', padding: '0', overflow: 'hidden' }}>
+      <div style={{ maxWidth: '90rem', margin: '0 auto', height: '100vh', display: 'flex', flexDirection: 'column' }}>
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '2rem', paddingTop: '0.5rem' }}>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: '700', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', marginBottom: '0.5rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '0.5rem', paddingTop: '0.25rem', flexShrink: 0 }}>
+          <h1 style={{ fontSize: '2rem', fontWeight: '700', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', marginBottom: '0.25rem' }}>
             Upload, Arrange & Create PDF
           </h1>
-          <p style={{ color: '#94a3b8', fontSize: '1rem' }}>Design beautiful PDF documents with drag-and-drop simplicity</p>
+          <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Design beautiful PDF documents with drag-and-drop simplicity</p>
         </div>
 
         {/* Toolbar */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', marginBottom: '0.5rem', flexWrap: 'wrap', flexShrink: 0 }}>
           <button
             onClick={() => fileInputRef.current?.click()}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', padding: '0.875rem 1.75rem', borderRadius: '0.75rem', border: 'none', cursor: 'pointer', fontSize: '1rem', fontWeight: '600', transition: 'all 0.3s', boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '0.75rem', border: 'none', cursor: 'pointer', fontSize: '0.875rem', fontWeight: '600', transition: 'all 0.3s', boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)' }}
             onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.6)' }}
             onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)' }}
           >
@@ -412,44 +412,92 @@ function App() {
           
           <button
             onClick={addText}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white', padding: '0.875rem 1.75rem', borderRadius: '0.75rem', border: 'none', cursor: 'pointer', fontSize: '1rem', fontWeight: '600', transition: 'all 0.3s', boxShadow: '0 4px 15px rgba(245, 87, 108, 0.4)' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '0.75rem', border: 'none', cursor: 'pointer', fontSize: '0.875rem', fontWeight: '600', transition: 'all 0.3s', boxShadow: '0 4px 15px rgba(245, 87, 108, 0.4)' }}
             onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(245, 87, 108, 0.6)' }}
             onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(245, 87, 108, 0.4)' }}
           >
-            <Type size={20} />
+            <Type size={18} />
             Add Text
           </button>
 
           <button
             onClick={addPage}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', color: 'white', padding: '0.875rem 1.75rem', borderRadius: '0.75rem', border: 'none', cursor: 'pointer', fontSize: '1rem', fontWeight: '600', transition: 'all 0.3s', boxShadow: '0 4px 15px rgba(79, 172, 254, 0.4)' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '0.75rem', border: 'none', cursor: 'pointer', fontSize: '0.875rem', fontWeight: '600', transition: 'all 0.3s', boxShadow: '0 4px 15px rgba(79, 172, 254, 0.4)' }}
             onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(79, 172, 254, 0.6)' }}
             onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(79, 172, 254, 0.4)' }}
           >
-            <Plus size={20} />
+            <Plus size={18} />
             Add Page
           </button>
 
           <button
             onClick={generatePDF}
             disabled={isGenerating}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: isGenerating ? '#475569' : 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', color: 'white', padding: '0.875rem 1.75rem', borderRadius: '0.75rem', border: 'none', cursor: isGenerating ? 'not-allowed' : 'pointer', fontSize: '1rem', fontWeight: '600', transition: 'all 0.3s', boxShadow: isGenerating ? 'none' : '0 4px 15px rgba(250, 112, 154, 0.4)' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: isGenerating ? '#475569' : 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '0.75rem', border: 'none', cursor: isGenerating ? 'not-allowed' : 'pointer', fontSize: '0.875rem', fontWeight: '600', transition: 'all 0.3s', boxShadow: isGenerating ? 'none' : '0 4px 15px rgba(250, 112, 154, 0.4)' }}
             onMouseOver={(e) => !isGenerating && (e.currentTarget.style.transform = 'translateY(-2px)', e.currentTarget.style.boxShadow = '0 6px 20px rgba(250, 112, 154, 0.6)')}
             onMouseOut={(e) => !isGenerating && (e.currentTarget.style.transform = 'translateY(0)', e.currentTarget.style.boxShadow = '0 4px 15px rgba(250, 112, 154, 0.4)')}
           >
-            <Download size={20} />
+            <Download size={18} />
             {isGenerating ? 'Generating...' : 'Download PDF'}
           </button>
         </div>
 
-        {/* Canvas Container with scaling */}
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', maxHeight: 'calc(100vh - 180px)' }}>
-          <div
-            style={{
-              transform: 'scale(0.7)',
-              transformOrigin: 'top center',
+        {/* Canvas Container with scaling and side navigation */}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: window.innerWidth < 768 ? '0.5rem' : '2rem', flex: 1, overflow: 'hidden' }}>
+          {/* Left Arrow */}
+          <button
+            onClick={prevPage}
+            disabled={currentPage === 0}
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              background: currentPage === 0 ? '#334155' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+              color: currentPage === 0 ? '#64748b' : 'white', 
+              padding: window.innerWidth < 768 ? '0.5rem' : '1rem', 
+              borderRadius: '50%', 
+              border: 'none', 
+              cursor: currentPage === 0 ? 'not-allowed' : 'pointer', 
+              transition: 'all 0.3s', 
+              width: window.innerWidth < 768 ? '40px' : '56px', 
+              height: window.innerWidth < 768 ? '40px' : '56px', 
+              boxShadow: currentPage === 0 ? 'none' : '0 4px 15px rgba(102, 126, 234, 0.4)',
+              flexShrink: 0,
+              alignSelf: 'center'
             }}
+            onMouseOver={(e) => currentPage !== 0 && (e.currentTarget.style.transform = 'scale(1.1)', e.currentTarget.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.6)')}
+            onMouseOut={(e) => currentPage !== 0 && (e.currentTarget.style.transform = 'scale(1)', e.currentTarget.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)')}
           >
+            <ChevronLeft size={window.innerWidth < 768 ? 20 : 28} />
+          </button>
+          
+          {/* Canvas and Page Info */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
+            {/* Page Counter */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)', padding: '0.5rem 1.25rem', borderRadius: '0.75rem', boxShadow: '0 4px 15px rgba(0,0,0,0.3)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+              <span style={{ fontSize: '0.875rem', fontWeight: '700', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                Page {currentPage + 1} of {pages.length}
+              </span>
+              {pages.length > 1 && (
+                <button
+                  onClick={deletePage}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white', padding: '0.375rem 0.625rem', borderRadius: '0.5rem', border: 'none', cursor: 'pointer', fontSize: '0.75rem', fontWeight: '600', transition: 'all 0.3s', boxShadow: '0 4px 15px rgba(245, 87, 108, 0.4)' }}
+                  onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(245, 87, 108, 0.6)' }}
+                  onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(245, 87, 108, 0.4)' }}
+                >
+                  <Trash2 size={12} />
+                  Delete
+                </button>
+              )}
+            </div>
+            
+            {/* Canvas */}
+            <div
+              style={{
+                transform: 'scale(0.75)',
+                transformOrigin: 'center center',
+              }}
+            >
             <div
               ref={canvasRef}
               style={{ 
@@ -680,45 +728,33 @@ function App() {
           )}
             </div>
           </div>
-        </div>
-
-        {/* Page Navigation - Below Canvas */}
-        <div style={{ background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)', borderRadius: '1rem', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', maxWidth: '56rem', margin: '0.5rem auto 0', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-          <button
-            onClick={prevPage}
-            disabled={currentPage === 0}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: currentPage === 0 ? '#334155' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: currentPage === 0 ? '#64748b' : 'white', padding: '0.75rem', borderRadius: '0.75rem', border: 'none', cursor: currentPage === 0 ? 'not-allowed' : 'pointer', transition: 'all 0.3s', width: '48px', height: '48px', boxShadow: currentPage === 0 ? 'none' : '0 4px 15px rgba(102, 126, 234, 0.4)' }}
-            onMouseOver={(e) => currentPage !== 0 && (e.currentTarget.style.transform = 'scale(1.1)', e.currentTarget.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.6)')}
-            onMouseOut={(e) => currentPage !== 0 && (e.currentTarget.style.transform = 'scale(1)', e.currentTarget.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)')}
-          >
-            <ChevronLeft size={24} />
-          </button>
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <span style={{ fontSize: '1.125rem', fontWeight: '700', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-              Page {currentPage + 1} of {pages.length}
-            </span>
-            {pages.length > 1 && (
-              <button
-                onClick={deletePage}
-                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white', padding: '0.5rem 1rem', borderRadius: '0.5rem', border: 'none', cursor: 'pointer', fontSize: '0.875rem', fontWeight: '600', transition: 'all 0.3s', boxShadow: '0 4px 15px rgba(245, 87, 108, 0.4)' }}
-                onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(245, 87, 108, 0.6)' }}
-                onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(245, 87, 108, 0.4)' }}
-              >
-                <Trash2 size={16} />
-                Delete
-              </button>
-            )}
           </div>
           
+          {/* Right Arrow */}
           <button
             onClick={nextPage}
             disabled={currentPage === pages.length - 1}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: currentPage === pages.length - 1 ? '#334155' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: currentPage === pages.length - 1 ? '#64748b' : 'white', padding: '0.75rem', borderRadius: '0.75rem', border: 'none', cursor: currentPage === pages.length - 1 ? 'not-allowed' : 'pointer', transition: 'all 0.3s', width: '48px', height: '48px', boxShadow: currentPage === pages.length - 1 ? 'none' : '0 4px 15px rgba(102, 126, 234, 0.4)' }}
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              background: currentPage === pages.length - 1 ? '#334155' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+              color: currentPage === pages.length - 1 ? '#64748b' : 'white', 
+              padding: window.innerWidth < 768 ? '0.5rem' : '1rem', 
+              borderRadius: '50%', 
+              border: 'none', 
+              cursor: currentPage === pages.length - 1 ? 'not-allowed' : 'pointer', 
+              transition: 'all 0.3s', 
+              width: window.innerWidth < 768 ? '40px' : '56px', 
+              height: window.innerWidth < 768 ? '40px' : '56px', 
+              boxShadow: currentPage === pages.length - 1 ? 'none' : '0 4px 15px rgba(102, 126, 234, 0.4)',
+              flexShrink: 0,
+              alignSelf: 'center'
+            }}
             onMouseOver={(e) => currentPage !== pages.length - 1 && (e.currentTarget.style.transform = 'scale(1.1)', e.currentTarget.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.6)')}
             onMouseOut={(e) => currentPage !== pages.length - 1 && (e.currentTarget.style.transform = 'scale(1)', e.currentTarget.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)')}
           >
-            <ChevronRight size={24} />
+            <ChevronRight size={window.innerWidth < 768 ? 20 : 28} />
           </button>
         </div>
       </div>
