@@ -18,6 +18,22 @@ function App() {
   // Get current page data with useMemo to prevent unnecessary re-renders
   const images = useMemo(() => pages[currentPage]?.images || [], [pages, currentPage]);
   const texts = useMemo(() => pages[currentPage]?.texts || [], [pages, currentPage]);
+
+  // Prevent page scroll when resizing
+  useEffect(() => {
+    if (isResizing) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    };
+  }, [isResizing]);
   
   const setImages = (updateFn) => {
     setPages(prev => {
