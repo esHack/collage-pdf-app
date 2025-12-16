@@ -683,7 +683,7 @@ function App() {
         </div>
 
         {/* Page Navigation - Below Canvas */}
-        <div style={{ background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)', borderRadius: window.innerWidth < 768 ? '0.5rem' : '1rem', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', padding: window.innerWidth < 768 ? '0.5rem' : '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', maxWidth: '56rem', margin: window.innerWidth < 768 ? '0.5rem 1rem 1rem 1rem' : '0.5rem auto 1rem', border: '1px solid rgba(255, 255, 255, 0.1)', width: window.innerWidth < 768 ? 'auto' : 'auto' }}>
+        <div style={{ background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)', borderRadius: window.innerWidth < 768 ? '0' : '1rem', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', padding: window.innerWidth < 768 ? '0.75rem 1rem' : '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', maxWidth: window.innerWidth < 768 ? '100%' : '56rem', margin: window.innerWidth < 768 ? '0' : '0.5rem auto 1rem', border: '1px solid rgba(255, 255, 255, 0.1)', position: window.innerWidth < 768 ? 'fixed' : 'relative', bottom: window.innerWidth < 768 ? '0' : 'auto', left: window.innerWidth < 768 ? '0' : 'auto', right: window.innerWidth < 768 ? '0' : 'auto', zIndex: window.innerWidth < 768 ? 1000 : 'auto' }}>
           <button
             onClick={prevPage}
             disabled={currentPage === 0}
