@@ -506,6 +506,7 @@ function App() {
                 transformOrigin: 'center center',
               }}
               onClick={() => setSelectedItem({ ...img, type: 'image' })}
+              onTouchStart={() => setSelectedItem({ ...img, type: 'image' })}
             >
               {/* Drag Handle - Only for mobile */}
               {window.innerWidth < 768 && (
