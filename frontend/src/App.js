@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Upload, Download, Type, ImagePlus, Trash2, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { Upload, Download, Type, ImagePlus, Trash2, ChevronLeft, ChevronRight, Plus, GripVertical } from 'lucide-react';
 import heic2any from 'heic2any';
 
 function App() {
@@ -484,14 +484,42 @@ function App() {
                 top: `${img.y}px`,
                 width: `${img.width}px`,
                 height: `${img.height}px`,
-                cursor: 'move',
+                cursor: 'default',
                 border: isSelected ? '3px solid #3b82f6' : 'none',
                 transform: `rotate(${img.rotation || 0}deg)`,
                 transformOrigin: 'center center',
               }}
-              onMouseDown={(e) => handleMouseDown(e, img, 'image')}
-              onTouchStart={(e) => handleMouseDown(e, img, 'image')}
+              onClick={() => setSelectedItem({ ...img, type: 'image' })}
             >
+              {/* Drag Handle - Only for mobile */}
+              {window.innerWidth < 768 && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '4px',
+                    left: '4px',
+                    background: 'rgba(59, 130, 246, 0.9)',
+                    borderRadius: '0.375rem',
+                    padding: '0.5rem',
+                    cursor: 'move',
+                    zIndex: 10,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                    touchAction: 'none'
+                  }}
+                  onMouseDown={(e) => { setSelectedItem({ ...img, type: 'image' }); handleMouseDown(e, img, 'image'); }}
+                  onTouchStart={(e) => { e.preventDefault(); setSelectedItem({ ...img, type: 'image' }); handleMouseDown(e, img, 'image'); }}
+                >
+                  <GripVertical size={20} color="white" />
+                </div>
+              )}
+              {/* Desktop: whole image is draggable */}
+              <div
+                style={{ width: '100%', height: '100%' }}
+                onMouseDown={window.innerWidth >= 768 ? (e) => handleMouseDown(e, img, 'image') : undefined}
+              >
               <img
                 src={img.src}
                 alt="uploaded"
@@ -619,6 +647,7 @@ function App() {
                   </button>
                 </>
               )}
+              </div>
             </div>
           )})}
 
