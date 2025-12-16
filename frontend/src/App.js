@@ -683,30 +683,30 @@ function App() {
         </div>
 
         {/* Page Navigation - Below Canvas */}
-        <div style={{ background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)', borderRadius: '1rem', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', maxWidth: '56rem', margin: '0.5rem auto 0', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+        <div style={{ background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)', borderRadius: window.innerWidth < 768 ? '0.5rem' : '1rem', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', padding: window.innerWidth < 768 ? '0.5rem' : '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', maxWidth: '56rem', margin: window.innerWidth < 768 ? '0.5rem 1rem 1rem 1rem' : '0.5rem auto 1rem', border: '1px solid rgba(255, 255, 255, 0.1)', width: window.innerWidth < 768 ? 'auto' : 'auto' }}>
           <button
             onClick={prevPage}
             disabled={currentPage === 0}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: currentPage === 0 ? '#334155' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: currentPage === 0 ? '#64748b' : 'white', padding: '0.75rem', borderRadius: '0.75rem', border: 'none', cursor: currentPage === 0 ? 'not-allowed' : 'pointer', transition: 'all 0.3s', width: '48px', height: '48px', boxShadow: currentPage === 0 ? 'none' : '0 4px 15px rgba(102, 126, 234, 0.4)' }}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: currentPage === 0 ? '#334155' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: currentPage === 0 ? '#64748b' : 'white', padding: window.innerWidth < 768 ? '0.5rem' : '0.75rem', borderRadius: '0.5rem', border: 'none', cursor: currentPage === 0 ? 'not-allowed' : 'pointer', transition: 'all 0.3s', width: window.innerWidth < 768 ? '36px' : '48px', height: window.innerWidth < 768 ? '36px' : '48px', boxShadow: currentPage === 0 ? 'none' : '0 4px 15px rgba(102, 126, 234, 0.4)', flexShrink: 0 }}
             onMouseOver={(e) => currentPage !== 0 && (e.currentTarget.style.transform = 'scale(1.1)', e.currentTarget.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.6)')}
             onMouseOut={(e) => currentPage !== 0 && (e.currentTarget.style.transform = 'scale(1)', e.currentTarget.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)')}
           >
-            <ChevronLeft size={24} />
+            <ChevronLeft size={window.innerWidth < 768 ? 18 : 24} />
           </button>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <span style={{ fontSize: '1.125rem', fontWeight: '700', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: window.innerWidth < 768 ? '0.5rem' : '1rem', flex: 1, justifyContent: 'center' }}>
+            <span style={{ fontSize: window.innerWidth < 768 ? '0.875rem' : '1.125rem', fontWeight: '700', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', whiteSpace: 'nowrap' }}>
               Page {currentPage + 1} of {pages.length}
             </span>
             {pages.length > 1 && (
               <button
                 onClick={deletePage}
-                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white', padding: '0.5rem 1rem', borderRadius: '0.5rem', border: 'none', cursor: 'pointer', fontSize: '0.875rem', fontWeight: '600', transition: 'all 0.3s', boxShadow: '0 4px 15px rgba(245, 87, 108, 0.4)' }}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white', padding: window.innerWidth < 768 ? '0.375rem 0.625rem' : '0.5rem 1rem', borderRadius: '0.5rem', border: 'none', cursor: 'pointer', fontSize: window.innerWidth < 768 ? '0.75rem' : '0.875rem', fontWeight: '600', transition: 'all 0.3s', boxShadow: '0 4px 15px rgba(245, 87, 108, 0.4)', whiteSpace: 'nowrap' }}
                 onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(245, 87, 108, 0.6)' }}
                 onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(245, 87, 108, 0.4)' }}
               >
-                <Trash2 size={16} />
-                Delete
+                <Trash2 size={window.innerWidth < 768 ? 12 : 16} />
+                {window.innerWidth >= 768 ? 'Delete' : ''}
               </button>
             )}
           </div>
@@ -714,11 +714,11 @@ function App() {
           <button
             onClick={nextPage}
             disabled={currentPage === pages.length - 1}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: currentPage === pages.length - 1 ? '#334155' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: currentPage === pages.length - 1 ? '#64748b' : 'white', padding: '0.75rem', borderRadius: '0.75rem', border: 'none', cursor: currentPage === pages.length - 1 ? 'not-allowed' : 'pointer', transition: 'all 0.3s', width: '48px', height: '48px', boxShadow: currentPage === pages.length - 1 ? 'none' : '0 4px 15px rgba(102, 126, 234, 0.4)' }}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: currentPage === pages.length - 1 ? '#334155' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: currentPage === pages.length - 1 ? '#64748b' : 'white', padding: window.innerWidth < 768 ? '0.5rem' : '0.75rem', borderRadius: '0.5rem', border: 'none', cursor: currentPage === pages.length - 1 ? 'not-allowed' : 'pointer', transition: 'all 0.3s', width: window.innerWidth < 768 ? '36px' : '48px', height: window.innerWidth < 768 ? '36px' : '48px', boxShadow: currentPage === pages.length - 1 ? 'none' : '0 4px 15px rgba(102, 126, 234, 0.4)', flexShrink: 0 }}
             onMouseOver={(e) => currentPage !== pages.length - 1 && (e.currentTarget.style.transform = 'scale(1.1)', e.currentTarget.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.6)')}
             onMouseOut={(e) => currentPage !== pages.length - 1 && (e.currentTarget.style.transform = 'scale(1)', e.currentTarget.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)')}
           >
-            <ChevronRight size={24} />
+            <ChevronRight size={window.innerWidth < 768 ? 18 : 24} />
           </button>
         </div>
       </div>
