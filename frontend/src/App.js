@@ -567,10 +567,10 @@ function App() {
                     onTouchStart={(e) => handleResizeStart(e, img, 'nw')}
                     style={{
                       position: 'absolute',
-                      top: '-9px',
-                      left: '-9px',
-                      width: '18px',
-                      height: '18px',
+                      top: '-12px',
+                      left: '-12px',
+                      width: '24px',
+                      height: '24px',
                       background: '#3b82f6',
                       border: '2px solid white',
                       borderRadius: '50%',
@@ -583,10 +583,10 @@ function App() {
                     onTouchStart={(e) => handleResizeStart(e, img, 'ne')}
                     style={{
                       position: 'absolute',
-                      top: '-9px',
-                      right: '-9px',
-                      width: '18px',
-                      height: '18px',
+                      top: '-12px',
+                      right: '-12px',
+                      width: '24px',
+                      height: '24px',
                       background: '#3b82f6',
                       border: '2px solid white',
                       borderRadius: '50%',
@@ -599,10 +599,10 @@ function App() {
                     onTouchStart={(e) => handleResizeStart(e, img, 'sw')}
                     style={{
                       position: 'absolute',
-                      bottom: '-9px',
-                      left: '-9px',
-                      width: '18px',
-                      height: '18px',
+                      bottom: '-12px',
+                      left: '-12px',
+                      width: '24px',
+                      height: '24px',
                       background: '#3b82f6',
                       border: '2px solid white',
                       borderRadius: '50%',
@@ -615,10 +615,10 @@ function App() {
                     onTouchStart={(e) => handleResizeStart(e, img, 'se')}
                     style={{
                       position: 'absolute',
-                      bottom: '-9px',
-                      right: '-9px',
-                      width: '18px',
-                      height: '18px',
+                      bottom: '-12px',
+                      right: '-12px',
+                      width: '24px',
+                      height: '24px',
                       background: '#3b82f6',
                       border: '2px solid white',
                       borderRadius: '50%',
