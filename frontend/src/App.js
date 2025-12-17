@@ -396,8 +396,6 @@ function App() {
           window.URL.revokeObjectURL(url);
           document.body.removeChild(a);
         }, 100);
-        
-        alert('PDF downloaded successfully!');
       } else {
         alert('PDF generation failed. Make sure the backend server is running on port 3001.');
       }
@@ -471,6 +469,61 @@ function App() {
             {isGenerating ? 'Generating...' : 'Download PDF'}
           </button>
         </div>
+
+        {/* Loading Progress Bar */}
+        {isGenerating && (
+          <div style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            background: 'white',
+            padding: '2rem',
+            borderRadius: '1rem',
+            boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+            zIndex: 2000,
+            minWidth: '300px',
+            textAlign: 'center'
+          }}>
+            <div style={{ marginBottom: '1rem', fontSize: '1.125rem', fontWeight: '600', color: '#1f2937' }}>
+              Generating PDF...
+            </div>
+            <div style={{
+              width: '100%',
+              height: '8px',
+              background: '#e5e7eb',
+              borderRadius: '4px',
+              overflow: 'hidden'
+            }}>
+              <div style={{
+                width: '100%',
+                height: '100%',
+                background: 'linear-gradient(90deg, #fa709a 0%, #fee140 50%, #fa709a 100%)',
+                backgroundSize: '200% 100%',
+                animation: 'slideGradient 1.5s ease-in-out infinite'
+              }} />
+            </div>
+            <style>{`
+              @keyframes slideGradient {
+                0% { background-position: 0% 0%; }
+                100% { background-position: 200% 0%; }
+              }
+            `}</style>
+          </div>
+        )}
+
+        {/* Backdrop overlay when generating */}
+        {isGenerating && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.3)',
+            zIndex: 1999
+          }} />
+        )}
 
         {/* Canvas Container with scaling */}
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', maxHeight: 'calc(100vh - 180px)' }}>
