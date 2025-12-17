@@ -139,8 +139,12 @@ function App() {
   };
 
   const handleMouseDown = (e, item, type) => {
+    // Only handle left mouse button (button === 0) or touch events
+    if (e.type === 'mousedown' && e.button !== 0) {
+      return;
+    }
+    
     e.stopPropagation();
-    e.preventDefault();
     setSelectedItem({ ...item, type });
     setIsDragging(true);
     const rect = canvasRef.current.getBoundingClientRect();
@@ -165,6 +169,11 @@ function App() {
   };
 
   const handleResizeStart = (e, item, handle) => {
+    // Only handle left mouse button (button === 0) or touch events
+    if (e.type === 'mousedown' && e.button !== 0) {
+      return;
+    }
+    
     e.stopPropagation();
     e.preventDefault();
     setSelectedItem({ ...item, type: 'image' });
@@ -569,7 +578,8 @@ function App() {
               {/* Desktop: whole image is draggable */}
               <div
                 style={{ width: '100%', height: '100%' }}
-                onMouseDown={window.innerWidth >= 768 ? (e) => handleMouseDown(e, img, 'image') : undefined}
+                onMouseDown={window.innerWidth >= 768 ? (e) => { e.preventDefault(); handleMouseDown(e, img, 'image'); } : undefined}
+                onContextMenu={(e) => e.preventDefault()}
               >
               <img
                 src={img.src}
@@ -584,6 +594,7 @@ function App() {
                   boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
                 }}
                 draggable={false}
+                onContextMenu={(e) => e.preventDefault()}
                 onLoad={() => console.log('IMG element loaded successfully:', img.id)}
                 onError={(e) => {
                   console.error('IMG element error:', img.id);
