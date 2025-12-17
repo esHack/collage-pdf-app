@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Upload, Download, Type, ImagePlus, Trash2, ChevronLeft, ChevronRight, Plus, GripVertical } from 'lucide-react';
+import { Upload, Download, Type, ImagePlus, Trash2, ChevronLeft, ChevronRight, Plus, GripVertical, Maximize2 } from 'lucide-react';
 import heic2any from 'heic2any';
 
 function App() {
@@ -534,6 +534,32 @@ function App() {
                   <span style={{ fontSize: '0.625rem', color: 'white', fontWeight: '600', whiteSpace: 'nowrap' }}>Drag</span>
                 </div>
               )}
+              {/* Resize Handle - Only for mobile when selected */}
+              {window.innerWidth < 768 && isSelected && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: '4px',
+                    right: '4px',
+                    background: 'rgba(34, 197, 94, 0.9)',
+                    borderRadius: '0.375rem',
+                    padding: '0.5rem',
+                    cursor: 'se-resize',
+                    zIndex: 10,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.25rem',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                    touchAction: 'none'
+                  }}
+                  onMouseDown={(e) => handleResizeStart(e, img, 'se')}
+                  onTouchStart={(e) => { e.preventDefault(); handleResizeStart(e, img, 'se'); }}
+                >
+                  <Maximize2 size={20} color="white" />
+                  <span style={{ fontSize: '0.625rem', color: 'white', fontWeight: '600', whiteSpace: 'nowrap' }}>Resize</span>
+                </div>
+              )}
               {/* Desktop: whole image is draggable */}
               <div
                 style={{ width: '100%', height: '100%' }}
@@ -562,71 +588,71 @@ function App() {
               />
               {isSelected && (
                 <>
-                  {/* Resize handles */}
-                  <div
-                    onMouseDown={(e) => handleResizeStart(e, img, 'nw')}
-                    onTouchStart={(e) => handleResizeStart(e, img, 'nw')}
-                    style={{
-                      position: 'absolute',
-                      top: '-12px',
-                      left: '-12px',
-                      width: '24px',
-                      height: '24px',
-                      background: '#3b82f6',
-                      border: '2px solid white',
-                      borderRadius: '50%',
-                      cursor: 'nw-resize',
-                      zIndex: 10,
-                    }}
-                  />
-                  <div
-                    onMouseDown={(e) => handleResizeStart(e, img, 'ne')}
-                    onTouchStart={(e) => handleResizeStart(e, img, 'ne')}
-                    style={{
-                      position: 'absolute',
-                      top: '-12px',
-                      right: '-12px',
-                      width: '24px',
-                      height: '24px',
-                      background: '#3b82f6',
-                      border: '2px solid white',
-                      borderRadius: '50%',
-                      cursor: 'ne-resize',
-                      zIndex: 10,
-                    }}
-                  />
-                  <div
-                    onMouseDown={(e) => handleResizeStart(e, img, 'sw')}
-                    onTouchStart={(e) => handleResizeStart(e, img, 'sw')}
-                    style={{
-                      position: 'absolute',
-                      bottom: '-12px',
-                      left: '-12px',
-                      width: '24px',
-                      height: '24px',
-                      background: '#3b82f6',
-                      border: '2px solid white',
-                      borderRadius: '50%',
-                      cursor: 'sw-resize',
-                      zIndex: 10,
-                    }}
-                  />
-                  <div
-                    onMouseDown={(e) => handleResizeStart(e, img, 'se')}
-                    onTouchStart={(e) => handleResizeStart(e, img, 'se')}
-                    style={{
-                      position: 'absolute',
-                      bottom: '-12px',
-                      right: '-12px',
-                      width: '24px',
-                      height: '24px',
-                      background: '#3b82f6',
-                      border: '2px solid white',
+                  {/* Resize handles - Desktop only */}
+                  {window.innerWidth >= 768 && (
+                    <>
+                      <div
+                        onMouseDown={(e) => handleResizeStart(e, img, 'nw')}
+                        style={{
+                          position: 'absolute',
+                          top: '-12px',
+                          left: '-12px',
+                          width: '24px',
+                          height: '24px',
+                          background: '#3b82f6',
+                          border: '2px solid white',
+                          borderRadius: '50%',
+                          cursor: 'nw-resize',
+                          zIndex: 10,
+                        }}
+                      />
+                      <div
+                        onMouseDown={(e) => handleResizeStart(e, img, 'ne')}
+                        style={{
+                          position: 'absolute',
+                          top: '-12px',
+                          right: '-12px',
+                          width: '24px',
+                          height: '24px',
+                          background: '#3b82f6',
+                          border: '2px solid white',
+                          borderRadius: '50%',
+                          cursor: 'ne-resize',
+                          zIndex: 10,
+                        }}
+                      />
+                      <div
+                        onMouseDown={(e) => handleResizeStart(e, img, 'sw')}
+                        style={{
+                          position: 'absolute',
+                          bottom: '-12px',
+                          left: '-12px',
+                          width: '24px',
+                          height: '24px',
+                          background: '#3b82f6',
+                          border: '2px solid white',
+                          borderRadius: '50%',
+                          cursor: 'sw-resize',
+                          zIndex: 10,
+                        }}
+                      />
+                      <div
+                        onMouseDown={(e) => handleResizeStart(e, img, 'se')}
+                        style={{
+                          position: 'absolute',
+                          bottom: '-12px',
+                          right: '-12px',
+                          width: '24px',
+                          height: '24px',
+                          background: '#3b82f6',
+                          border: '2px solid white',
                       borderRadius: '50%',
                       cursor: 'se-resize',
                       zIndex: 10,
                     }}
                   />
+                    </>
+                  )}
                   {/* Rotation buttons - bottom left */}
                   <button
                     onClick={(e) => {
