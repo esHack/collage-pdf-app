@@ -93,21 +93,26 @@ function App() {
           console.log('Image loaded, data URL length:', dataUrl.length);
           console.log('Data URL starts with:', dataUrl.substring(0, 50));
           
-          // Random position within canvas bounds to avoid stacking
-          const randomX = Math.floor(Math.random() * 500) + 50; // 50 to 550
-          const randomY = Math.floor(Math.random() * 800) + 50; // 50 to 850
-          
           setImages(prev => {
+            // Position near top-center of canvas
+            const canvasWidth = 794; // A4 width
+            const imageWidth = 400;
+            const centerX = (canvasWidth - imageWidth) / 2; // Center horizontally
+            const topY = 50; // Close to top
+            
+            // Offset subsequent images by 30px diagonally
+            const offset = prev.length * 30;
+            
             const newImage = {
               id: Date.now() + Math.random(),
               src: dataUrl,
-              x: randomX,
-              y: randomY,
+              x: centerX + offset,
+              y: topY + offset,
               width: 400,
               height: 400,
               rotation: 0,
             };
-            console.log('Adding image at:', randomX, randomY);
+            console.log('Adding image at:', centerX + offset, topY + offset);
             return [...prev, newImage];
           });
         };
@@ -504,6 +509,7 @@ function App() {
                 border: isSelected ? '3px solid #3b82f6' : 'none',
                 transform: `rotate(${img.rotation || 0}deg)`,
                 transformOrigin: 'center center',
+                zIndex: isSelected ? 1000 : 1,
               }}
               onClick={() => setSelectedItem({ ...img, type: 'image' })}
               onTouchStart={() => setSelectedItem({ ...img, type: 'image' })}
