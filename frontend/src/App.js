@@ -778,7 +778,9 @@ function App() {
 
 
           {/* Texts */}
-          {texts.map((txt) => (
+          {texts.map((txt) => {
+            const isSelected = selectedItem?.id === txt.id;
+            return (
             <div
               key={txt.id}
               style={{
@@ -786,9 +788,10 @@ function App() {
                 left: `${txt.x}px`,
                 top: `${txt.y}px`,
                 cursor: 'move',
-                border: selectedItem?.id === txt.id ? '2px dashed #3b82f6' : 'none',
+                border: isSelected ? '2px dashed #3b82f6' : 'none',
                 padding: '4px',
                 touchAction: 'none',
+                zIndex: isSelected ? 1000 : 2,
               }}
               onMouseDown={(e) => handleMouseDown(e, txt, 'text')}
               onTouchStart={(e) => handleMouseDown(e, txt, 'text')}
@@ -956,7 +959,8 @@ function App() {
                 </button>
               )}
             </div>
-          ))}
+          );
+          })}
 
           {images.length === 0 && texts.length === 0 && (
             <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af' }}>
