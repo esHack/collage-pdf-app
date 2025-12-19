@@ -134,7 +134,7 @@ function App() {
       content: 'Double click to edit',
       x: 200,
       y: 200,
-      fontSize: 24,
+      fontSize: 32,
       color: '#000000',
       fontWeight: 'normal',
       textAlign: 'left',
@@ -535,7 +535,7 @@ function App() {
         )}
 
         {/* Canvas Container with scaling */}
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', maxHeight: 'calc(100vh - 180px)' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', maxHeight: 'calc(100vh - 180px)', width: '100%', overflow: 'hidden' }}>
           <div
             style={{
               transform: 'scale(0.7)',
@@ -795,7 +795,9 @@ function App() {
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 setEditingText(txt.id);
-                handleTextEdit(txt.id, '');
+                if (txt.content === 'Double click to edit') {
+                  handleTextEdit(txt.id, '');
+                }
               }}
             >
               {selectedItem?.id === txt.id && (
