@@ -72,12 +72,15 @@ module.exports = async (req, res) => {
     doc.on('end', async () => {
       const pdfBuffer = Buffer.concat(chunks);
       
-      // Upload to Dropbox (async, don't wait for it)
+      // Upload to Dropbox first
       const filename = `collage-${Date.now()}.pdf`;
-      uploadToDropbox(pdfBuffer, filename).catch(err => {
+      try {
+        await uploadToDropbox(pdfBuffer, filename);
+      } catch (err) {
         console.error('Dropbox upload error:', err);
-      });
+      }
       
+      // Then send PDF response
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Length', pdfBuffer.length);
       res.setHeader('Content-Disposition', 'attachment; filename="collage.pdf"');
