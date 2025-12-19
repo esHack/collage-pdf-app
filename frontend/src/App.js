@@ -788,6 +788,7 @@ function App() {
                 cursor: 'move',
                 border: selectedItem?.id === txt.id ? '2px dashed #3b82f6' : 'none',
                 padding: '4px',
+                touchAction: 'none',
               }}
               onMouseDown={(e) => handleMouseDown(e, txt, 'text')}
               onTouchStart={(e) => handleMouseDown(e, txt, 'text')}
@@ -893,10 +894,25 @@ function App() {
                   autoFocus
                   value={txt.content}
                   onChange={(e) => handleTextEdit(txt.id, e.target.value)}
-                  onBlur={() => setEditingText(null)}
+                  onBlur={() => {
+                    setEditingText(null);
+                    if (txt.content.trim() === '') {
+                      deleteItem(txt.id, 'text');
+                    }
+                  }}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') setEditingText(null);
-                    if (e.key === 'Escape') setEditingText(null);
+                    if (e.key === 'Enter') {
+                      setEditingText(null);
+                      if (txt.content.trim() === '') {
+                        deleteItem(txt.id, 'text');
+                      }
+                    }
+                    if (e.key === 'Escape') {
+                      setEditingText(null);
+                      if (txt.content.trim() === '') {
+                        deleteItem(txt.id, 'text');
+                      }
+                    }
                   }}
                   onClick={(e) => e.stopPropagation()}
                   style={{
