@@ -12,6 +12,7 @@ function App() {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const [isGenerating, setIsGenerating] = useState(false);
+  const [editingText, setEditingText] = useState(null);
   const canvasRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -131,10 +132,12 @@ function App() {
     setTexts(prev => [...prev, {
       id: Date.now() + Math.random(),
       content: 'Double click to edit',
-      x: 100,
-      y: 100,
+      x: 200,
+      y: 200,
       fontSize: 24,
       color: '#000000',
+      fontWeight: 'normal',
+      textAlign: 'left',
     }]);
   };
 
@@ -269,6 +272,12 @@ function App() {
   const handleTextEdit = (id, newContent) => {
     setTexts(prev => prev.map(txt => 
       txt.id === id ? { ...txt, content: newContent } : txt
+    ));
+  };
+
+  const updateTextStyle = (id, property, value) => {
+    setTexts(prev => prev.map(txt => 
+      txt.id === id ? { ...txt, [property]: value } : txt
     ));
   };
 
@@ -784,20 +793,137 @@ function App() {
               onTouchStart={(e) => handleMouseDown(e, txt, 'text')}
               onDoubleClick={(e) => {
                 e.stopPropagation();
-                const newContent = prompt('Edit text:', txt.content);
-                if (newContent !== null) handleTextEdit(txt.id, newContent);
+                setEditingText(txt.id);
+                handleTextEdit(txt.id, '');
               }}
             >
-              <div
-                style={{
-                  fontSize: `${txt.fontSize}px`,
-                  color: txt.color,
-                  whiteSpace: 'nowrap',
-                  userSelect: 'none',
-                }}
-              >
-                {txt.content}
-              </div>
+              {selectedItem?.id === txt.id && (
+                <div style={{
+                  position: 'absolute',
+                  top: '-3.5rem',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  background: 'white',
+                  padding: '0.5rem',
+                  borderRadius: '0.5rem',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                  display: 'flex',
+                  gap: '0.5rem',
+                  alignItems: 'center',
+                  zIndex: 100,
+                  whiteSpace: 'nowrap'
+                }}>
+                  {/* Font Size */}
+                  <select
+                    value={txt.fontSize}
+                    onChange={(e) => updateTextStyle(txt.id, 'fontSize', parseInt(e.target.value))}
+                    style={{
+                      padding: '0.25rem 0.5rem',
+                      borderRadius: '0.25rem',
+                      border: '1px solid #d1d5db',
+                      fontSize: '0.875rem'
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {[12, 16, 20, 24, 28, 32, 36, 42, 48, 56, 64, 72].map(size => (
+                      <option key={size} value={size}>{size}px</option>
+                    ))}
+                  </select>
+
+                  {/* Color Picker */}
+                  <input
+                    type="color"
+                    value={txt.color}
+                    onChange={(e) => updateTextStyle(txt.id, 'color', e.target.value)}
+                    style={{
+                      width: '2rem',
+                      height: '1.75rem',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '0.25rem',
+                      cursor: 'pointer'
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+
+                  {/* Bold Toggle */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      updateTextStyle(txt.id, 'fontWeight', txt.fontWeight === 'bold' ? 'normal' : 'bold');
+                    }}
+                    style={{
+                      padding: '0.25rem 0.5rem',
+                      borderRadius: '0.25rem',
+                      border: '1px solid #d1d5db',
+                      background: txt.fontWeight === 'bold' ? '#3b82f6' : 'white',
+                      color: txt.fontWeight === 'bold' ? 'white' : '#000',
+                      fontWeight: 'bold',
+                      cursor: 'pointer',
+                      fontSize: '0.875rem'
+                    }}
+                  >
+                    B
+                  </button>
+
+                  {/* Delete Button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteItem(txt.id, 'text');
+                    }}
+                    style={{
+                      padding: '0.25rem 0.5rem',
+                      borderRadius: '0.25rem',
+                      border: 'none',
+                      background: '#ef4444',
+                      color: 'white',
+                      cursor: 'pointer',
+                      fontSize: '0.875rem',
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              )}
+              {editingText === txt.id ? (
+                <input
+                  type="text"
+                  autoFocus
+                  value={txt.content}
+                  onChange={(e) => handleTextEdit(txt.id, e.target.value)}
+                  onBlur={() => setEditingText(null)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') setEditingText(null);
+                    if (e.key === 'Escape') setEditingText(null);
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                  style={{
+                    fontSize: `${txt.fontSize}px`,
+                    color: txt.color,
+                    fontWeight: txt.fontWeight || 'normal',
+                    border: '2px solid #3b82f6',
+                    background: 'white',
+                    padding: '2px 4px',
+                    outline: 'none',
+                    fontFamily: 'inherit',
+                    minWidth: '100px'
+                  }}
+                />
+              ) : (
+                <div
+                  style={{
+                    fontSize: `${txt.fontSize}px`,
+                    color: txt.color,
+                    fontWeight: txt.fontWeight || 'normal',
+                    whiteSpace: 'nowrap',
+                    userSelect: 'none',
+                  }}
+                >
+                  {txt.content}
+                </div>
+              )}
               {selectedItem?.id === txt.id && (
                 <button
                   onClick={(e) => {
