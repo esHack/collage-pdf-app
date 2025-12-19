@@ -1,10 +1,51 @@
+require('dotenv').config();
+
 const express = require('express');
 const puppeteer = require('puppeteer');
 const cors = require('cors');
+const { Dropbox } = require('dropbox');
 const app = express();
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
+
+// Dropbox configuration
+let dropboxClient = null;
+
+function initializeDropbox() {
+  if (process.env.DROPBOX_ACCESS_TOKEN) {
+    dropboxClient = new Dropbox({ accessToken: process.env.DROPBOX_ACCESS_TOKEN });
+    console.log('✅ Dropbox initialized');
+  } else {
+    console.log('⚠️ Dropbox not configured');
+  }
+}
+
+// Initialize Dropbox on startup
+initializeDropbox();
+
+async function uploadToDropbox(pdfBuffer, filename) {
+  if (!dropboxClient) {
+    console.log('⚠️ Dropbox not configured, skipping upload');
+    return;
+  }
+
+  try {
+    const path = `/collagepdf/${filename}`;
+    
+    const response = await dropboxClient.filesUpload({
+      path: path,
+      contents: pdfBuffer
+    });
+    
+    console.log('✅ Uploaded to Dropbox:', response.result.name);
+    console.log('📎 Path:', response.result.path_display);
+    
+    return response.result;
+  } catch (error) {
+    console.error('❌ Dropbox upload failed:', error.message);
+  }
+}
 
 app.post('/generate-pdf', async (req, res) => {
   const { pages } = req.body;
@@ -131,7 +172,13 @@ app.post('/generate-pdf', async (req, res) => {
 
     console.log('PDF generated successfully, size:', pdf.length, 'bytes');
     
-    // Set proper headers for PDF
+    // Upload to Dropbox (async, don't wait for it)
+    const filename = `collage-${Date.now()}.pdf`;
+    uploadToDropbox(pdf, filename).catch(err => {
+      console.error('Dropbox upload error:', err);
+    });
+    
+    // Respond immediately with PDF
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Length', pdf.length);
     res.setHeader('Content-Disposition', 'attachment; filename="collage.pdf"');
