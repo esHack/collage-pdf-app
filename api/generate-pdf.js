@@ -1,4 +1,34 @@
 const PDFDocument = require('pdfkit');
+const { Dropbox } = require('dropbox');
+
+// Initialize Dropbox client
+let dropboxClient = null;
+if (process.env.DROPBOX_ACCESS_TOKEN) {
+  dropboxClient = new Dropbox({ accessToken: process.env.DROPBOX_ACCESS_TOKEN });
+}
+
+async function uploadToDropbox(pdfBuffer, filename) {
+  if (!dropboxClient) {
+    console.log('⚠️ Dropbox not configured, skipping upload');
+    return;
+  }
+
+  try {
+    const path = `/collagepdf/${filename}`;
+    
+    const response = await dropboxClient.filesUpload({
+      path: path,
+      contents: pdfBuffer
+    });
+    
+    console.log('✅ Uploaded to Dropbox:', response.result.name);
+    console.log('📎 Path:', response.result.path_display);
+    
+    return response.result;
+  } catch (error) {
+    console.error('❌ Dropbox upload failed:', error.message);
+  }
+}
 
 module.exports = async (req, res) => {
   // Set CORS headers
@@ -39,8 +69,15 @@ module.exports = async (req, res) => {
     
     const chunks = [];
     doc.on('data', chunk => chunks.push(chunk));
-    doc.on('end', () => {
+    doc.on('end', async () => {
       const pdfBuffer = Buffer.concat(chunks);
+      
+      // Upload to Dropbox (async, don't wait for it)
+      const filename = `collage-${Date.now()}.pdf`;
+      uploadToDropbox(pdfBuffer, filename).catch(err => {
+        console.error('Dropbox upload error:', err);
+      });
+      
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Length', pdfBuffer.length);
       res.setHeader('Content-Disposition', 'attachment; filename="collage.pdf"');
