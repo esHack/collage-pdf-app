@@ -4,11 +4,44 @@
     <meta charset="utf-8" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23ef4444' rx='10'/><text x='50' y='70' font-size='60' font-weight='bold' text-anchor='middle' fill='white' font-family='Arial, sans-serif'>PDF</text></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#0f172a" />
     <meta
       name="description"
-      content="Create beautiful photo collages and export them as PDF"
+      content="Free browser tool to turn photos into a multi-page A4 PDF. Upload images, drag, resize and rotate them, add text captions, and export. Supports iPhone HEIC photos. No account, no watermark."
     />
+    <link rel="canonical" href="https://collagepdf.com/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Collage PDF" />
+    <meta property="og:title" content="Collage PDF — free photo collage to PDF maker" />
+    <meta property="og:description" content="Arrange photos and text on A4 pages and export a multi-page PDF, free and in your browser. Supports iPhone HEIC photos." />
+    <meta property="og:url" content="https://collagepdf.com/" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Collage PDF — free photo collage to PDF maker" />
+    <meta name="twitter:description" content="Arrange photos and text on A4 pages and export a multi-page PDF, free and in your browser." />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Collage PDF",
+        "url": "https://collagepdf.com/",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "Any (web browser)",
+        "browserRequirements": "Requires JavaScript",
+        "description": "Free browser tool for arranging photos and text on A4 pages and exporting them as a multi-page PDF. Supports iPhone HEIC photos, drag, resize, rotate and text captions.",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "featureList": [
+          "Upload multiple images at once",
+          "Automatic HEIC and HEIF conversion for iPhone photos",
+          "Drag, resize and rotate images freely",
+          "Add text captions with custom size and colour",
+          "Unlimited A4 pages",
+          "Export as a multi-page PDF with no watermark"
+        ]
+      }
+    </script>
+
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
@@ -24,10 +57,27 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>Image to PDF Collage</title>
+    <title>Collage PDF — Free Photo Collage to PDF Maker</title>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>
+      <h1>Collage PDF</h1>
+      <p>
+        Collage PDF is a free browser tool for turning photos into a multi-page
+        A4 PDF. Upload your images, drag, resize and rotate them on the page,
+        add text captions, and export the result as a PDF. Photos from an
+        iPhone work directly &mdash; HEIC and HEIF files are converted
+        automatically. There is no account to create and no watermark on the
+        output.
+      </p>
+      <p>
+        The editor itself needs JavaScript enabled. These pages do not:
+      </p>
+      <ul>
+        <li><a href="/how-to-make-a-photo-collage-pdf">How to make a photo collage PDF</a> &mdash; a step-by-step guide</li>
+        <li><a href="/faq">Frequently asked questions</a> &mdash; formats, page size, printing and more</li>
+      </ul>
+    </noscript>
     <div id="root"></div>
     <!--
       This HTML file is a template.

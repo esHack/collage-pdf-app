@@ -425,6 +425,11 @@ function App() {
             Upload, Arrange & Create PDF
           </h1>
           <p style={{ color: '#94a3b8', fontSize: '1rem' }}>Design beautiful PDF documents with drag-and-drop simplicity</p>
+          <div style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: '#64748b' }}>
+            <a href="/how-to-make-a-photo-collage-pdf" style={{ color: '#94a3b8', textDecoration: 'none' }}>How it works</a>
+            <span style={{ margin: '0 0.5rem' }}>·</span>
+            <a href="/faq" style={{ color: '#94a3b8', textDecoration: 'none' }}>FAQ</a>
+          </div>
         </div>
 
         {/* Toolbar */}
