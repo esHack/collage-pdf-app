@@ -46,7 +46,6 @@
     { "@type": "Question", "name": "Can I use photos from my iPhone?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. iPhones save photos as HEIC by default. You can upload HEIC and HEIF files directly, and they are converted to JPEG in your browser before being placed on the page." } },
     { "@type": "Question", "name": "What page size does it export?", "acceptedAnswer": { "@type": "Answer", "text": "A4, which is 210 by 297 millimetres. The editing canvas matches that ratio exactly, so what you arrange on screen is what appears in the PDF." } },
     { "@type": "Question", "name": "How many images and pages can I add?", "acceptedAnswer": { "@type": "Answer", "text": "There is no fixed limit on either. In practice, very large collages with many high-resolution photos on a single page can hit a size ceiling during export, in which case splitting the collage across two exports resolves it." } },
-    { "@type": "Question", "name": "What happens to my photos?", "acceptedAnswer": { "@type": "Answer", "text": "Your images are sent to the server, which assembles them into a PDF and returns the finished file to your browser for download. Please avoid uploading confidential or sensitive material." } },
     { "@type": "Question", "name": "Why did my PDF fail to export?", "acceptedAnswer": { "@type": "Answer", "text": "The most common cause is size. There is a ceiling on how much image data can be sent for rendering at once, so a collage with many large photos may not complete. Split it across two exports or use fewer high-resolution images per page." } },
     { "@type": "Question", "name": "Does it work on a phone or tablet?", "acceptedAnswer": { "@type": "Answer", "text": "It loads on mobile browsers, but the editor is built around dragging and resizing on a full A4 canvas, so it is considerably easier to use on a laptop or desktop with a larger screen." } },
     { "@type": "Question", "name": "Can I edit or reposition text after adding it?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Click any text box to edit its content, change its size or colour, or drag it to a new position, for as long as the page is open." } },
@@ -84,9 +83,6 @@
 
 <h2>How many images and pages can I add?</h2>
 <p>There is no fixed limit on either. In practice, a page crowded with high-resolution photos can hit a size ceiling during export — see below.</p>
-
-<h2>What happens to my photos?</h2>
-<p>Your images are sent to the server, which assembles them into a PDF and returns the finished file to your browser for download. Please avoid uploading confidential or sensitive material.</p>
 
 <h2>Why did my PDF fail to export?</h2>
 <p>Almost always size. There is a ceiling on how much image data can be sent for rendering in one request, so a collage with many large photos may not complete. Split it across two exports, or use fewer high-resolution images per page. Images are compressed before upload, so this generally only appears with a lot of large photos at once.</p>
