@@ -6,16 +6,35 @@ const cors = require('cors');
 const { Dropbox } = require('dropbox');
 const app = express();
 
-app.use(cors());
+app.use(cors({ exposedHeaders: ['X-Dropbox-Upload'] }));
 app.use(express.json({ limit: '50mb' }));
 
-// Dropbox configuration
+// Dropbox configuration. Prefer the refresh-token flow: the SDK mints its own
+// access tokens, so nothing expires. A bare DROPBOX_ACCESS_TOKEN still works,
+// but `sl.` tokens stop authenticating ~4 hours after they are generated.
 let dropboxClient = null;
 
 function initializeDropbox() {
-  if (process.env.DROPBOX_ACCESS_TOKEN) {
-    dropboxClient = new Dropbox({ accessToken: process.env.DROPBOX_ACCESS_TOKEN });
-    console.log('✅ Dropbox initialized');
+  const {
+    DROPBOX_APP_KEY,
+    DROPBOX_APP_SECRET,
+    DROPBOX_REFRESH_TOKEN,
+    DROPBOX_ACCESS_TOKEN,
+  } = process.env;
+
+  if (DROPBOX_APP_KEY && DROPBOX_APP_SECRET && DROPBOX_REFRESH_TOKEN) {
+    dropboxClient = new Dropbox({
+      clientId: DROPBOX_APP_KEY,
+      clientSecret: DROPBOX_APP_SECRET,
+      refreshToken: DROPBOX_REFRESH_TOKEN,
+    });
+    console.log('✅ Dropbox initialized (refresh token)');
+  } else if (DROPBOX_ACCESS_TOKEN) {
+    dropboxClient = new Dropbox({ accessToken: DROPBOX_ACCESS_TOKEN });
+    console.log('✅ Dropbox initialized (static access token)');
+    if (DROPBOX_ACCESS_TOKEN.startsWith('sl.')) {
+      console.log('⚠️ Short-lived token in use — it expires ~4h after generation. Set DROPBOX_APP_KEY / DROPBOX_APP_SECRET / DROPBOX_REFRESH_TOKEN instead.');
+    }
   } else {
     console.log('⚠️ Dropbox not configured');
   }
@@ -24,27 +43,36 @@ function initializeDropbox() {
 // Initialize Dropbox on startup
 initializeDropbox();
 
+// Dropbox SDK errors carry the useful detail in `.status` and `.error`,
+// not in `.message` (which is just "Response failed with a NNN code").
+function describeDropboxError(error) {
+  const parts = [];
+  if (error && error.status) parts.push(`HTTP ${error.status}`);
+  const body = error && error.error;
+  if (typeof body === 'string') parts.push(body);
+  else if (body && body.error_summary) parts.push(body.error_summary);
+  else if (body) parts.push(JSON.stringify(body));
+  else if (error && error.message) parts.push(error.message);
+  return parts.join(' — ') || String(error);
+}
+
 async function uploadToDropbox(pdfBuffer, filename) {
   if (!dropboxClient) {
     console.log('⚠️ Dropbox not configured, skipping upload');
-    return;
+    return null;
   }
 
-  try {
-    const path = `/collagepdf/${filename}`;
-    
-    const response = await dropboxClient.filesUpload({
-      path: path,
-      contents: pdfBuffer
-    });
-    
-    console.log('✅ Uploaded to Dropbox:', response.result.name);
-    console.log('📎 Path:', response.result.path_display);
-    
-    return response.result;
-  } catch (error) {
-    console.error('❌ Dropbox upload failed:', error.message);
-  }
+  const path = `/collagepdf/${filename}`;
+
+  const response = await dropboxClient.filesUpload({
+    path: path,
+    contents: pdfBuffer
+  });
+
+  console.log('✅ Uploaded to Dropbox:', response.result.name);
+  console.log('📎 Path:', response.result.path_display);
+
+  return response.result;
 }
 
 app.post('/generate-pdf', async (req, res) => {
@@ -172,16 +200,23 @@ app.post('/generate-pdf', async (req, res) => {
 
     console.log('PDF generated successfully, size:', pdf.length, 'bytes');
     
-    // Upload to Dropbox (async, don't wait for it)
+    // Upload to Dropbox. Awaited so the reported status is accurate — this is
+    // the dev server, where knowing the upload result beats shaving latency.
     const filename = `collage-${Date.now()}.pdf`;
-    uploadToDropbox(pdf, filename).catch(err => {
-      console.error('Dropbox upload error:', err);
-    });
+    let uploadStatus = 'skipped';
+    try {
+      uploadStatus = (await uploadToDropbox(pdf, filename)) ? 'ok' : 'skipped';
+    } catch (err) {
+      uploadStatus = 'failed';
+      console.error('❌ Dropbox upload failed:', describeDropboxError(err));
+    }
     
-    // Respond immediately with PDF
+    // Respond with the PDF. It is still returned on upload failure — the
+    // header reports what happened.
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Length', pdf.length);
     res.setHeader('Content-Disposition', 'attachment; filename="collage.pdf"');
+    res.setHeader('X-Dropbox-Upload', uploadStatus);
     res.end(pdf, 'binary');
   } catch (error) {
     console.error('Error generating PDF:', error);
