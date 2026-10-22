@@ -9,9 +9,6 @@ const app = express();
 app.use(cors({ exposedHeaders: ['X-Dropbox-Upload'] }));
 app.use(express.json({ limit: '50mb' }));
 
-// Dropbox configuration. Prefer the refresh-token flow: the SDK mints its own
-// access tokens, so nothing expires. A bare DROPBOX_ACCESS_TOKEN still works,
-// but `sl.` tokens stop authenticating ~4 hours after they are generated.
 let dropboxClient = null;
 
 function initializeDropbox() {
@@ -40,11 +37,8 @@ function initializeDropbox() {
   }
 }
 
-// Initialize Dropbox on startup
 initializeDropbox();
 
-// Dropbox SDK errors carry the useful detail in `.status` and `.error`,
-// not in `.message` (which is just "Response failed with a NNN code").
 function describeDropboxError(error) {
   const parts = [];
   if (error && error.status) parts.push(`HTTP ${error.status}`);
@@ -82,22 +76,27 @@ app.post('/generate-pdf', async (req, res) => {
   try {
     console.log('Generating PDF with', pages?.length || 0, 'pages');
     console.log('Request body:', JSON.stringify(req.body).substring(0, 200));
-    
-    // Validate input
+
     if (!pages || !Array.isArray(pages)) {
       console.error('Invalid pages data:', pages);
       return res.status(400).json({ error: 'Invalid pages data' });
     }
+
+    const renderablePages = pages.filter(page =>
+      page && ((page.images && page.images.length > 0) || (page.texts && page.texts.length > 0))
+    );
+
+    if (!renderablePages.length) {
+      return res.status(400).json({ error: 'No content to render in PDF' });
+    }
     
-    // Generate HTML for all pages
-    const pagesHTML = pages.map(page => {
+    const pagesHTML = renderablePages.map(page => {
       const { images = [], texts = [] } = page;
       return `
         <div class="page">
           ${images.map(img => `
             <div style="position: absolute; left: ${img.x}px; top: ${img.y}px; width: ${img.width}px; height: ${img.height}px; transform: rotate(${img.rotation || 0}deg); transform-origin: center center;">
-              <img class="image" src="${img.src}" 
-                style="width: 100%; height: 100%;" />
+              <img class="image" src="${img.src}" style="width: 100%; height: 100%; object-fit: contain; display: block;" />
             </div>
           `).join('')}
           ${texts.map(txt => `
@@ -109,7 +108,6 @@ app.post('/generate-pdf', async (req, res) => {
       `;
     }).join('');
     
-    // Generate HTML from the collage data
     const html = `
       <!DOCTYPE html>
       <html>
@@ -151,7 +149,6 @@ app.post('/generate-pdf', async (req, res) => {
       </html>
     `;
 
-    // Launch Puppeteer
     browser = await puppeteer.launch({
       headless: 'new',
       args: ['--no-sandbox', '--disable-setuid-sandbox']
@@ -161,14 +158,13 @@ app.post('/generate-pdf', async (req, res) => {
     await page.setViewport({ width: 794, height: 1123 });
     await page.setContent(html, { waitUntil: 'networkidle0' });
     
-    // Wait for images to load with timeout
     try {
       await page.evaluate(() => {
         return Promise.all(
           Array.from(document.images).map(img => {
             if (img.complete) return Promise.resolve();
-            return new Promise((resolve, reject) => {
-              const timeout = setTimeout(() => resolve(), 5000); // 5 second timeout per image
+            return new Promise((resolve) => {
+              const timeout = setTimeout(() => resolve(), 5000);
               img.addEventListener('load', () => {
                 clearTimeout(timeout);
                 resolve();
@@ -176,7 +172,7 @@ app.post('/generate-pdf', async (req, res) => {
               img.addEventListener('error', () => {
                 clearTimeout(timeout);
                 console.error('Image failed to load:', img.src.substring(0, 50));
-                resolve(); // Continue even if image fails
+                resolve();
               });
             });
           })
@@ -185,13 +181,10 @@ app.post('/generate-pdf', async (req, res) => {
       console.log('All images loaded');
     } catch (imgError) {
       console.warn('Image loading error:', imgError);
-      // Continue anyway
     }
     
-    // Small delay to ensure rendering
     await new Promise(resolve => setTimeout(resolve, 500));
     
-    // Generate PDF
     const pdf = await page.pdf({
       format: 'A4',
       printBackground: true,
@@ -200,8 +193,6 @@ app.post('/generate-pdf', async (req, res) => {
 
     console.log('PDF generated successfully, size:', pdf.length, 'bytes');
     
-    // Upload to Dropbox. Awaited so the reported status is accurate — this is
-    // the dev server, where knowing the upload result beats shaving latency.
     const filename = `collage-${Date.now()}.pdf`;
     let uploadStatus = 'skipped';
     try {
@@ -211,8 +202,6 @@ app.post('/generate-pdf', async (req, res) => {
       console.error('❌ Dropbox upload failed:', describeDropboxError(err));
     }
     
-    // Respond with the PDF. It is still returned on upload failure — the
-    // header reports what happened.
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Length', pdf.length);
     res.setHeader('Content-Disposition', 'attachment; filename="collage.pdf"');
@@ -236,3 +225,4 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
 });
+

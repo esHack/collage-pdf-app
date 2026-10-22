@@ -1,9 +1,6 @@
 const PDFDocument = require('pdfkit');
 const { Dropbox } = require('dropbox');
 
-// Dropbox client. Prefer the refresh-token flow: the SDK mints its own
-// access tokens, so nothing expires. A bare DROPBOX_ACCESS_TOKEN still works,
-// but `sl.` tokens stop authenticating ~4 hours after they are generated.
 let dropboxClient = null;
 
 const {
@@ -30,8 +27,6 @@ if (DROPBOX_APP_KEY && DROPBOX_APP_SECRET && DROPBOX_REFRESH_TOKEN) {
   console.log('⚠️ Dropbox not configured');
 }
 
-// Dropbox SDK errors carry the useful detail in `.status` and `.error`,
-// not in `.message` (which is just "Response failed with a NNN code").
 function describeDropboxError(error) {
   const parts = [];
   if (error && error.status) parts.push(`HTTP ${error.status}`);
@@ -63,7 +58,6 @@ async function uploadToDropbox(pdfBuffer, filename) {
 }
 
 module.exports = async (req, res) => {
-  // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -71,7 +65,7 @@ module.exports = async (req, res) => {
     'Access-Control-Allow-Headers',
     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
   );
-  res.setHeader('Access-Control-Expose-Headers', 'X-Dropbox-Upload');
+  res.setHeader('Access-Control-Expose-Headers', 'X-Dropbox-Upload, X-Image-Errors');
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -87,13 +81,19 @@ module.exports = async (req, res) => {
   try {
     console.log('Generating PDF with', pages?.length || 0, 'pages');
     
-    // Validate input
     if (!pages || !Array.isArray(pages)) {
       console.error('Invalid pages data:', pages);
       return res.status(400).json({ error: 'Invalid pages data' });
     }
+
+    const renderablePages = pages.filter(page =>
+      page && ((page.images && page.images.length > 0) || (page.texts && page.texts.length > 0))
+    );
+
+    if (!renderablePages.length) {
+      return res.status(400).json({ error: 'No content to render in PDF' });
+    }
     
-    // Create PDF document (A4 size: 595.28 x 841.89 points)
     const doc = new PDFDocument({ 
       size: 'A4',
       margin: 0,
@@ -101,12 +101,10 @@ module.exports = async (req, res) => {
     });
     
     const chunks = [];
+    const imageErrors = [];
     doc.on('data', chunk => chunks.push(chunk));
     doc.on('end', async () => {
       const pdfBuffer = Buffer.concat(chunks);
-      
-      // Upload before responding: the function freezes once the response is
-      // sent, so an un-awaited upload would never finish (see commit d844b65).
       const filename = `collage-${Date.now()}.pdf`;
       let uploadStatus = 'skipped';
       try {
@@ -116,8 +114,6 @@ module.exports = async (req, res) => {
         console.error('❌ Dropbox upload failed:', describeDropboxError(err));
       }
       
-      // Then send PDF response. The PDF is still returned on upload failure —
-      // the header reports what happened.
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Length', pdfBuffer.length);
       res.setHeader('Content-Disposition', 'attachment; filename="collage.pdf"');
@@ -125,20 +121,32 @@ module.exports = async (req, res) => {
       res.end(pdfBuffer);
     });
 
-    // Process each page
-    for (let i = 0; i < pages.length; i++) {
-      const page = pages[i];
+    for (let i = 0; i < renderablePages.length; i++) {
+      const page = renderablePages[i];
       doc.addPage();
       
-      // Add images
       if (page.images && page.images.length > 0) {
         for (const img of page.images) {
           try {
-            // Convert data URL to buffer
+            if (!img || typeof img.src !== 'string') {
+              throw new Error(`Invalid image object on page ${i + 1}`);
+            }
+
+            const match = img.src.match(/^data:(image\/(png|jpeg|jpg));base64,/i);
+            if (!match) {
+              throw new Error(`Unsupported image format for page ${i + 1}: ${img.src.slice(0, 40)}`);
+            }
+
             const base64Data = img.src.split(',')[1];
+            if (!base64Data) {
+              throw new Error(`Missing image data for page ${i + 1}`);
+            }
+
             const imageBuffer = Buffer.from(base64Data, 'base64');
-            
-            // Calculate position and size (PDF points: 794px -> 595.28pt, 1123px -> 841.89pt)
+            if (!imageBuffer.length) {
+              throw new Error(`Empty image buffer for page ${i + 1}`);
+            }
+
             const scaleX = 595.28 / 794;
             const scaleY = 841.89 / 1123;
             const x = img.x * scaleX;
@@ -146,28 +154,23 @@ module.exports = async (req, res) => {
             const width = img.width * scaleX;
             const height = img.height * scaleY;
             
-            // Save current state
             doc.save();
             
-            // Apply rotation if needed
             if (img.rotation && img.rotation !== 0) {
               const centerX = x + width / 2;
               const centerY = y + height / 2;
               doc.rotate(img.rotation, { origin: [centerX, centerY] });
             }
             
-            // Add image
             doc.image(imageBuffer, x, y, { width, height });
-            
-            // Restore state
             doc.restore();
           } catch (err) {
+            imageErrors.push(`Page ${i + 1}: ${err.message}`);
             console.error('Error adding image:', err);
           }
         }
       }
       
-      // Add texts
       if (page.texts && page.texts.length > 0) {
         for (const txt of page.texts) {
           try {
@@ -187,6 +190,15 @@ module.exports = async (req, res) => {
       }
     }
 
+    if (imageErrors.length > 0) {
+      console.error('Image rendering errors:', imageErrors);
+      res.setHeader('X-Image-Errors', String(imageErrors.length));
+      return res.status(422).json({
+        error: 'One or more images could not be rendered into the PDF.',
+        details: imageErrors.slice(0, 10)
+      });
+    }
+
     doc.end();
     
   } catch (error) {
@@ -194,3 +206,4 @@ module.exports = async (req, res) => {
     res.status(500).json({ error: 'Failed to generate PDF', details: error.message });
   }
 };
+
